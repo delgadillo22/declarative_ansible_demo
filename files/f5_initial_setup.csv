@@ -1,0 +1,2 @@
+authHdr,hostName,ntpServer,timeZone,dnsServer,ext_vlan_name,ext_vlan_interface,ext_vlan_tag,int_vlan_name,int_vlan_interface,int_vlan_tag,ext_selfip_name,ext_selfip_address,ext_selfip_vlan,ext_selfip_allowService,ext_selfip_trafficGroup,int_selfip_name,int_selfip_address,int_selfip_vlan,int_selfip_allowService,int_selfip_trafficGroup
+Basic YWRtaW46YWRtaW4=,bigip.f5demo.com,time.nist.gov,America/New_York,8.8.4.4,ext,1.1,10,int,1.2,20,ext-self,10.128.10.240/24,ext,none,traffic-group-local-only,int-self,10.128.20.240/24,int,none,traffic-group-local-only

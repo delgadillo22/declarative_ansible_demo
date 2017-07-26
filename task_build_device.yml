@@ -1,0 +1,113 @@
+      - name: Get facts from CSV file
+        csv_to_facts:
+            src: ./files/f5_initial_setup.csv
+
+      - name: Disable GUI Setup
+        uri:
+            url: https://{{ inventory_hostname }}:10443/mgmt/tm/sys/global-settings
+            method: PATCH
+            HEADER_Content-Type: "application/json"
+            HEADER_Authorization: "{{ item.authHdr }}"
+            body:
+               guiSetup: disabled
+            body_format: json
+            validate_certs: no
+        with_items: "{{ spreadsheet }}"
+
+      - name: Set hostname
+        uri:
+            url: https://{{ inventory_hostname }}:10443/mgmt/tm/sys/global-settings
+            method: PATCH
+            HEADER_Content-Type: "application/json"
+            HEADER_Authorization: "{{ item.authHdr }}"
+            body:
+               hostname: "{{ item.hostName }}"
+            body_format: json
+            validate_certs: no
+        with_items: "{{ spreadsheet }}"
+
+      - name: Set DNS Resolver
+        uri:
+            url: https://{{ inventory_hostname }}:10443/mgmt/tm/sys/dns
+            method: PATCH
+            HEADER_Content-Type: "application/json"
+            HEADER_Authorization: "{{ item.authHdr }}"
+            body:
+               nameServers: ["{{ item.dnsServer }}"]
+            body_format: json
+            validate_certs: no
+        with_items: "{{ spreadsheet }}"
+
+      - name: Set NTP servers and Timezone
+        uri:
+            url: https://{{ inventory_hostname }}:10443/mgmt/tm/sys/ntp
+            method: PATCH
+            HEADER_Content-Type: "application/json"
+            HEADER_Authorization: "{{ item.authHdr }}"
+            body:
+               servers: ["{{ item.ntpServer }}"]
+               timezone: "{{ item.timeZone }}"
+            body_format: json
+            validate_certs: no
+        with_items: "{{ spreadsheet }}"
+
+      - name: Create External VLANs
+        uri:
+            url: https://{{ inventory_hostname }}:10443/mgmt/tm/net/vlan
+            method: POST
+            HEADER_Content-Type: "application/json"
+            HEADER_Authorization: "{{ item.authHdr }}"
+            body:
+               interfaces: "{{item.ext_vlan_interface }}"
+               name: "{{ item.ext_vlan_name }}"
+               tag: "{{ item.ext_vlan_tag }}"
+            body_format: json
+            validate_certs: no
+        with_items: "{{ spreadsheet }}"
+      
+      - name: Create Internal VLANs
+        uri:
+            url: https://{{ inventory_hostname }}:10443/mgmt/tm/net/vlan
+            method: POST
+            HEADER_Content-Type: "application/json"
+            HEADER_Authorization: "{{ item.authHdr }}"
+            body:
+               interfaces: "{{item.int_vlan_interface }}"
+               name: "{{ item.int_vlan_name }}"
+               tag: "{{ item.int_vlan_tag }}"
+            body_format: json
+            validate_certs: no
+        with_items: "{{ spreadsheet }}"
+
+
+      - name: Create external Self IP
+        uri:
+            url: https://{{ inventory_hostname }}:10443/mgmt/tm/net/self
+            method: POST
+            HEADER_Content-Type: "application/json"
+            HEADER_Authorization: "{{ item.authHdr }}"
+            body:
+               address: "{{ item.ext_selfip_address }}"
+               allow-service: "{{ item.ext_selfip_allowService }}"
+               name: "{{ item.ext_selfip_name }}"
+               vlan: "{{ item.ext_selfip_vlan }}"
+               trafficGroup: "{{ item.ext_selfip_trafficGroup }}"
+            body_format: json
+            validate_certs: no
+        with_items: "{{ spreadsheet }}"
+
+      - name: Create internal Self IP
+        uri:
+            url: https://{{ inventory_hostname }}:10443/mgmt/tm/net/self
+            method: POST
+            HEADER_Content-Type: "application/json"
+            HEADER_Authorization: "{{ item.authHdr }}"
+            body:
+               address: "{{ item.int_selfip_address }}"
+               allow-service: "{{ item.int_selfip_allowService }}"
+               name: "{{ item.int_selfip_name }}"
+               vlan: "{{ item.int_selfip_vlan }}"
+               trafficGroup: "{{ item.int_selfip_trafficGroup }}"
+            body_format: json
+            validate_certs: no
+        with_items: "{{ spreadsheet }}"

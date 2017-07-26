@@ -1,0 +1,8 @@
+---
+- name: create base configuration
+  hosts: bigip
+  connection: local
+  gather_facts: no
+
+  tasks:
+      - include: task_build_device.yml
